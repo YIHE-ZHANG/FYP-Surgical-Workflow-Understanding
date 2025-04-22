@@ -1,0 +1,8 @@
+# Ignore data directory with large files
+data/rarp50/
+data/RARP50_test
+data/RARP50_train
+
+__pycache__/
+wandb/
+exp/

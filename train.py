@@ -1,12 +1,13 @@
 import os
 import torch
 import torch.nn as nn
-from datasets import Breakfast, GTEA, SALADS
+from datasets import Breakfast, GTEA, SALADS, RARP50
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import wandb
 import argparse
 import shutil
+import time
 from pathlib import Path
 import yaml
 from dotmap import DotMap
@@ -48,7 +49,20 @@ def get_clip_loss(image_embedding, text_embedding, logit_scale, loss_img, loss_t
 
 
 def main():
-    wandb_on = False
+    # Add debugging for GPU availability
+    print(f"PyTorch version: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"CUDA device count: {torch.cuda.device_count()}")
+        print(f"CUDA device name: {torch.cuda.get_device_name(0)}")
+    else:
+        print("No CUDA devices available!")
+
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+
+    wandb_on = True
     global args, best_prec1
     global global_step
     parser = argparse.ArgumentParser()
@@ -118,9 +132,15 @@ def main():
     elif args.dataset == 'salads':
         train_data = SALADS(transform=transform_train, mode='train', num_frames=config.data.num_frames,
                             n_split=config.data.n_split)
+    
+    elif args.dataset == 'rarp50':
+        train_data = RARP50(transform=transform_train, mode='train', num_frames=config.data.num_frames,
+                       ds=config.data.ds, ol=config.data.ol, n_split=config.data.n_split)
 
     train_loader = DataLoader(train_data, batch_size=config.data.batch_size, num_workers=config.data.workers,
                               shuffle=True, pin_memory=True, drop_last=True)
+    
+    print(f"Initial data loading completed at {time.strftime('%H:%M:%S')}")
 
     if device == "cpu":
         model_text.float()
@@ -172,7 +192,16 @@ def main():
         text_dict_posemb = text_dict_posemb.to(device, non_blocking=True)
         text_dict_pos = text_dict_posemb.repeat(config.data.batch_size, 1, 1)
         text_dict_pos = text_dict_pos.view(-1, text_dict_pos.shape[-1])
+
+        # Right before the DataLoader iteration begins
+        print(f"Epoch {epoch}: Starting batch fetching at {time.strftime('%H:%M:%S')}")
+
         for kkk, (images, list_id) in enumerate(tqdm(train_loader)):
+            # Add these lines to check device location
+            if kkk == 0:  # Only print on first batch to avoid cluttering output
+                print(f"Device of images: {images.device}")
+                print(f"Device of model: {next(model_image.parameters()).device}")
+
             if config.solver.type != 'monitor':
                 if (kkk + 1) == 1 or (kkk + 1) % 10 == 0:
                     lr_scheduler.step(epoch + kkk / len(train_loader))
