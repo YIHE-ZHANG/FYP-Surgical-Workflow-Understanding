@@ -6,3 +6,4 @@ data/RARP50_train
 __pycache__/
 wandb/
 exp/
+models/
