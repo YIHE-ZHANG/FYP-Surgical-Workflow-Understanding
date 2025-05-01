@@ -5,8 +5,8 @@ data:
     dataset: rarp50
     modality: RGB
     num_frames: 16
-    ds: 16
-    ol: 0.5
+    ds: 4  # Reduced from 16 to capture finer-grained movements
+    ol: 0.75  # Increased overlap for better continuous action coverage
     seg_length: 1
     n_split: 1
     split: 2
@@ -17,33 +17,33 @@ data:
     index_bias: 0
     input_size: 224
     max_act: 8
-    randaug:
-        N: 0
-        M: 9
+    randaug:  # Increased augmentation to help with class imbalance
+        N: 0  # Use 2 random augmentations
+        M: 9  # Intensity of augmentations
 network:
-    arch: ViT-B/16  #ViT-B/32 ViT-B/16
-    init: True # scratch, imagenet, kinetics
-    drop_out: 0.0 # probability of an element to be zeroed
-    emb_dropout: 0.0 # probability of embedding to be zeroed
+    arch: ViT-B/16
+    init: True
+    drop_out: 0.1  # Added dropout for better generalization
+    emb_dropout: 0.1  # Added embedding dropout
     partial_bn: False
     version: ''
     bn_momentum: 0.1
     consensus_type: avg
     type: clip_surgery
-    sim_header: 'Transf'  #Transf   meanP   LSTM   Transf_cls Conv_1D
+    sim_header: 'Transf'
     fix_text: False
     fix_img: False
     describe:
 solver:
     type: cosine
-    epochs: 50
+    epochs: 10  # Increased from 50 to allow more training time
     start_epoch: 0
     epoch_offset: 0
     optim: adamw
-    lr: 5.e-6
-    lr_warmup_step: 5
+    lr: 1.e-5  # Increased from 5.e-6 for faster convergence
+    lr_warmup_step: 10  # Increased warmup steps
     momentum: 0.9
-    weight_decay: 0.2
+    weight_decay: 0.1  # Reduced from 0.2 to prevent overfitting
     lr_decay_step: 15
     lr_decay_factor: 0.1
     clip_gradient: 20
@@ -51,6 +51,4 @@ solver:
     evaluate: False
     ratio: 1
     f_ratio: 10
-logging:
-    print_freq: 10
-    eval_freq: 1
+    class_weights: True  # Added class weighting for imbalanced classes

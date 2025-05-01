@@ -1,0 +1,38 @@
+pretrain: "./exp/clip_surgery/ViT-B/16/rarp50/0425_1936/0_epoch.pt"
+seed: 1024
+data:
+    dataset: rarp50
+    modality: RGB
+    num_frames: 16
+    ds: 16
+    ol: 0.5
+    seg_length: 1
+    n_split: 1
+    split: 1
+    batch_size: 1
+    workers: 4
+    gpus: 4
+    num_classes: 8
+    index_bias: 0
+    input_size: 224
+    max_act: 8
+    randaug:
+        N: 0
+        M: 0
+network:
+    arch: ViT-B/16  #ViT-B/32 ViT-B/16
+    init: True # scratch, imagenet, kinetics
+    drop_out: 0.0 # probability of an element to be zeroed
+    emb_dropout: 0.0 # probability of embedding to be zeroed
+    partial_bn: False
+    version: ''
+    bn_momentum: 0.1
+    consensus_type: avg
+    type: clip_surgery
+    sim_header: "Transf"   #Transf   meanP  LSTM Conv_1D Transf_cls
+    fix_text: False
+    fix_img: False
+    describe:
+logging:
+    print_freq: 10
+    eval_freq: 1
