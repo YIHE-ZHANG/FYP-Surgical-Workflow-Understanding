@@ -1,30 +1,85 @@
-pretrain:  './models/vit-16-32f.pt'
+# pretrain:  './models/vit-16-32f.pt'
+# resume:
+# seed: 1024
+# data:
+#     dataset: rarp50
+#     modality: RGB
+#     num_frames: 16
+#     ds: 4  # Reduced from 16 to capture finer-grained movements
+#     ol: 0.75  # Increased overlap for better continuous action coverage
+#     seg_length: 1
+#     n_split: 1
+#     split: 2
+#     batch_size: 8
+#     workers: 4
+#     gpus: 4
+#     num_classes: 8
+#     index_bias: 0
+#     input_size: 224
+#     max_act: 8
+#     randaug:  # Increased augmentation to help with class imbalance
+#         N: 2  # Use 2 random augmentations
+#         M: 9  # Intensity of augmentations
+# network:
+#     arch: ViT-B/16
+#     init: True
+#     drop_out: 0.3  # Added dropout for better generalization
+#     emb_dropout: 0.3  # Added embedding dropout
+#     partial_bn: False
+#     version: ''
+#     bn_momentum: 0.1
+#     consensus_type: avg
+#     type: clip_surgery
+#     sim_header: 'Transf'
+#     fix_text: False
+#     fix_img: False
+#     describe:
+# solver:
+#     type: cosine
+#     epochs: 10  # Increased from 50 to allow more training time
+#     start_epoch: 0
+#     epoch_offset: 0
+#     optim: adamw
+#     lr: 1.e-5  # Increased from 5.e-6 for faster convergence
+#     lr_warmup_step: 10  # Increased warmup steps
+#     momentum: 0.9
+#     weight_decay: 0.1  # Reduced from 0.2 to prevent overfitting
+#     lr_decay_step: 15
+#     lr_decay_factor: 0.1
+#     clip_gradient: 20
+#     loss_type: nll
+#     evaluate: False
+#     ratio: 1
+#     f_ratio: 10
+#     class_weights: True  # Added class weighting for imbalanced classes
+
+pretrain: './models/vit-16-32f.pt'
 resume:
 seed: 1024
 data:
     dataset: rarp50
     modality: RGB
-    num_frames: 16
-    ds: 4  # Reduced from 16 to capture finer-grained movements
-    ol: 0.75  # Increased overlap for better continuous action coverage
+    num_frames: 16  # Reduced from 16 for faster training
+    ds: 8  # Increased downsampling for speed
+    ol: 0.5  # Lower overlap for faster processing
     seg_length: 1
     n_split: 1
     split: 2
-    batch_size: 4
+    batch_size: 8
     workers: 4
     gpus: 4
     num_classes: 8
     index_bias: 0
     input_size: 224
-    max_act: 8
-    randaug:  # Increased augmentation to help with class imbalance
-        N: 0  # Use 2 random augmentations
-        M: 9  # Intensity of augmentations
+    max_act: 8  # Reduced from 8 for faster processing
+    randaug:
+        N: 0  # Minimal augmentation for speed
+        M: 5  # Lower intensity
 network:
     arch: ViT-B/16
     init: True
-    drop_out: 0.1  # Added dropout for better generalization
-    emb_dropout: 0.1  # Added embedding dropout
+    drop_out: 0.1  # Lower dropout for faster convergence
+    emb_dropout: 0.1
     partial_bn: False
     version: ''
     bn_momentum: 0.1
@@ -36,19 +91,22 @@ network:
     describe:
 solver:
     type: cosine
-    epochs: 10  # Increased from 50 to allow more training time
+    epochs: 5  # Quick training - just 5 epochs
     start_epoch: 0
     epoch_offset: 0
     optim: adamw
-    lr: 1.e-5  # Increased from 5.e-6 for faster convergence
-    lr_warmup_step: 10  # Increased warmup steps
+    lr: 2.e-5  # Higher learning rate for faster convergence
+    lr_warmup_step: 2  # Short warmup
     momentum: 0.9
-    weight_decay: 0.1  # Reduced from 0.2 to prevent overfitting
-    lr_decay_step: 15
-    lr_decay_factor: 0.1
+    weight_decay: 0.05  # Lower weight decay
+    lr_decay_step: 3
+    lr_decay_factor: 0.5
     clip_gradient: 20
     loss_type: nll
     evaluate: False
     ratio: 1
     f_ratio: 10
-    class_weights: True  # Added class weighting for imbalanced classes
+    class_weights: True
+logging:
+    print_freq: 25  # Less frequent printing
+    eval_freq: 1  # Validate every epoch

@@ -42,35 +42,96 @@ def text_prompt_slide(classes, id_list, dataset, cnt_max=5):
                     f"The eighth action does not exist."]
     
     # Special templates for RARP-50 surgical dataset - Using shortened versions
+    # if dataset == 'rarp50':
+    #     text_aug_cnts = [f"No surgical actions.",
+    #                      f"One surgical action.", f"Two surgical actions.",
+    #                      f"Three surgical actions.", f"Four surgical actions.",
+    #                      f"Five surgical actions.", f"Six surgical actions.",
+    #                      f"Seven surgical actions.", f"Eight surgical actions."]
+        
+    #     # Shorter templates for RARP50 to avoid exceeding token limits
+    #     text_aug_temp = [f"{{}}.", f"performing {{}}.",
+    #                      f"{{}} action.", f"executing {{}}.", 
+    #                      f"{{}} procedure.",
+    #                      f"{{}}.", f"surgical {{}}.",
+    #                      f"{{}} technique.", f"{{}} step.",
+    #                      f"{{}}.", f"{{}} action.",
+    #                      f"step: {{}}", f"action: {{}}.", f"maneuver: {{}}."]
+        
+    #     text_long_temp = [f"{{}}.", f"{{}}.", f"{{}}.",
+    #                       f"{{}}.", f"{{}}.", f"{{}}.",
+    #                       f"{{}} step", f"{{}} action", f"{{}} technique."]
+        
+    #     text_no_acts = [f"No first action.",
+    #                     f"No second action.", f"No third action.",
+    #                     f"No fourth action.", f"No fifth action.",
+    #                     f"No sixth action.", f"No seventh action.",
+    #                     f"No eighth action."]
+        
+    #     # Use shorter prefixes for RARP50
+    #     text_aug_acts = [f"1: ", f"2: ", f"3: ", f"4: ",
+    #                      f"5: ", f"6: ", f"7: ", f"8: "]
+
     if dataset == 'rarp50':
-        text_aug_cnts = [f"No surgical actions.",
-                         f"One surgical action.", f"Two surgical actions.",
-                         f"Three surgical actions.", f"Four surgical actions.",
-                         f"Five surgical actions.", f"Six surgical actions.",
-                         f"Seven surgical actions.", f"Eight surgical actions."]
+    # More descriptive and varied surgical prompts
+        text_aug_cnts = [
+            f"This surgical video shows no specific actions.",
+            f"This surgical video shows one key action.", 
+            f"This surgical video shows two sequential actions.", 
+            f"This surgical video shows three surgical steps.",
+            f"This surgical video shows four surgical manipulations.",
+            f"This surgical video shows five surgical techniques.",
+            f"This surgical video shows six robotic movements.",
+            f"This surgical video shows seven surgical procedures.",
+            f"This surgical video shows eight consecutive surgical actions."
+        ]
         
-        # Shorter templates for RARP50 to avoid exceeding token limits
-        text_aug_temp = [f"{{}}.", f"performing {{}}.",
-                         f"{{}} action.", f"executing {{}}.", 
-                         f"{{}} procedure.",
-                         f"{{}}.", f"surgical {{}}.",
-                         f"{{}} technique.", f"{{}} step.",
-                         f"{{}}.", f"{{}} action.",
-                         f"step: {{}}", f"action: {{}}.", f"maneuver: {{}}."]
+        # More diverse surgical prefixes
+        text_aug_acts = [
+            f"First, ", f"Then, ", f"Next, ", f"Following that, ",
+            f"Subsequently, ", f"Additionally, ", f"Finally, ", f"Lastly, "
+        ]
         
-        text_long_temp = [f"{{}}.", f"{{}}.", f"{{}}.",
-                          f"{{}}.", f"{{}}.", f"{{}}.",
-                          f"{{}} step", f"{{}} action", f"{{}} technique."]
+        # More specific surgical action templates
+        text_aug_temp = [
+            f"the surgeon is {{}}.", 
+            f"the robotic arm performs {{}}.",
+            f"this shows {{}}.", 
+            f"the procedure involves {{}}.",
+            f"we can observe {{}}.", 
+            f"{{}} is being performed.",
+            f"{{}} is visible in the field.",
+            f"{{}} is occurring.", 
+            f"{{}} is the current action.",
+            f"{{}} is taking place.",
+            f"the video demonstrates {{}}.",
+            f"{{}} is being executed.",
+            f"{{}} is shown.",
+            f"{{}} is evident."
+        ]
         
-        text_no_acts = [f"No first action.",
-                        f"No second action.", f"No third action.",
-                        f"No fourth action.", f"No fifth action.",
-                        f"No sixth action.", f"No seventh action.",
-                        f"No eighth action."]
+        text_long_temp = [
+            f"the surgeon is {{}}.", 
+            f"the procedure shows {{}}.", 
+            f"{{}}.",
+            f"we can see {{}}.", 
+            f"{{}} is happening.", 
+            f"{{}} is visible.",
+            f"the surgical step is {{}}", 
+            f"{{}} is being done.", 
+            f"the action is {{}}."
+        ]
         
-        # Use shorter prefixes for RARP50
-        text_aug_acts = [f"1: ", f"2: ", f"3: ", f"4: ",
-                         f"5: ", f"6: ", f"7: ", f"8: "]
+        text_no_acts = [
+            f"No first action.",
+            f"No second action.", 
+            f"No third action.",
+            f"No fourth action.", 
+            f"No fifth action.",
+            f"No sixth action.", 
+            f"No seventh action.", 
+            f"No eighth action."
+        ]
     
     text_aug_cnts = text_aug_cnts[:cnt_max+1]
     text_aug_acts = text_aug_acts[:cnt_max]

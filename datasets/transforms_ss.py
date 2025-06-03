@@ -8,6 +8,120 @@ import torch
 
 from PIL import Image, ImageOps, ImageFilter
 
+# Surgical Specific Augmentation
+class GroupSurgicalColorJitter(object):
+    """
+    Surgical-specific color jitter that emphasizes red channel variations
+    since surgical videos often have a reddish tint
+    """
+    def __init__(self, p=0.5, brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05):
+        self.p = p
+        self.brightness = brightness
+        self.contrast = contrast 
+        self.saturation = saturation
+        self.hue = hue
+        
+    def __call__(self, img_group):
+        if random.random() < self.p:
+            brightness = random.uniform(max(0, 1 - self.brightness), 1 + self.brightness)
+            contrast = random.uniform(max(0, 1 - self.contrast), 1 + self.contrast)
+            saturation = random.uniform(max(0, 1 - self.saturation), 1 + self.saturation)
+            hue = random.uniform(-self.hue, self.hue)
+            
+            # Create color jitter transform
+            color_jitter = torchvision.transforms.ColorJitter(
+                brightness=brightness,
+                contrast=contrast,
+                saturation=saturation,
+                hue=(-self.hue, self.hue)
+            )
+            
+            # Apply to all images in the group
+            return [color_jitter(img) for img in img_group]
+        return img_group
+
+
+class GroupSurgicalNoise(object):
+    """
+    Add Gaussian noise to simulate sensor noise in surgical cameras
+    """
+    def __init__(self, p=0.3, mean=0, std=0.03):
+        self.p = p
+        self.mean = mean
+        self.std = std
+        
+    def __call__(self, img_group):
+        if random.random() < self.p:
+            noisy_imgs = []
+            for img in img_group:
+                img_np = np.array(img).astype(np.float32) / 255.0
+                noise = np.random.normal(self.mean, self.std, img_np.shape)
+                noisy_img = img_np + noise
+                noisy_img = np.clip(noisy_img, 0, 1) * 255
+                noisy_img = Image.fromarray(noisy_img.astype(np.uint8))
+                noisy_imgs.append(noisy_img)
+            return noisy_imgs
+        return img_group
+
+
+class GroupSurgicalBlur(object):
+    def __init__(self, p=0.3, kernel_range=(3, 7)):
+        self.p = p
+        self.kernel_range = kernel_range
+        
+    def __call__(self, img_group):
+        if random.random() < self.p:
+            kernel_size = random.randrange(self.kernel_range[0], self.kernel_range[1] + 1, 2)  # Ensure odd size
+            sigma = random.random() * 1.9 + 0.1
+            return [img.filter(ImageFilter.GaussianBlur(radius=sigma)) for img in img_group]
+        return img_group
+
+
+class GroupSurgicalSpecularityHighlight(object):
+    """
+    Simulate specular highlights that commonly occur in surgical videos
+    due to light reflection off wet tissue surfaces
+    """
+    def __init__(self, p=0.3, intensity=(0.3, 0.7), size=(10, 30)):
+        self.p = p
+        self.intensity_range = intensity
+        self.size_range = size
+        
+    def __call__(self, img_group):
+        if random.random() < self.p:
+            # Choose a random position and size for the highlight
+            img_size = img_group[0].size
+            center_x = random.randint(0, img_size[0])
+            center_y = random.randint(0, img_size[1])
+            
+            highlight_size = random.randint(self.size_range[0], self.size_range[1])
+            intensity = random.uniform(self.intensity_range[0], self.intensity_range[1])
+            
+            result = []
+            for img in img_group:
+                # Convert to numpy array
+                img_np = np.array(img).astype(np.float32)
+                
+                # Create a mask for the highlight
+                y, x = np.ogrid[-center_y:img_size[1]-center_y, -center_x:img_size[0]-center_x]
+                mask = x*x + y*y <= highlight_size*highlight_size
+                
+                # Apply highlight with falloff from center
+                dist_from_center = np.sqrt(x*x + y*y)[mask]
+                falloff = 1 - (dist_from_center / highlight_size)
+                falloff = falloff.reshape(-1, 1)
+                
+                # Apply the highlight
+                img_np[mask] = img_np[mask] + (255 - img_np[mask]) * falloff * intensity
+                img_np = np.clip(img_np, 0, 255)
+                
+                # Convert back to PIL image
+                highlighted_img = Image.fromarray(img_np.astype(np.uint8))
+                result.append(highlighted_img)
+                
+            return result
+        return img_group
+
 
 class GroupRandomCrop(object):
     def __init__(self, size):

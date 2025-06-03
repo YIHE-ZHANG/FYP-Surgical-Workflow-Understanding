@@ -1,0 +1,83 @@
+ RARP-50 SURGICAL ACTION DATASET - CLASS IMBALANCE ANALYSIS REPORT
+================================================================================
+
+EXECUTIVE SUMMARY
+--------------------
+Class Imbalance Severity: Extreme
+Imbalance Ratio: 18.50:1
+Most vs Least Common Class Ratio: 41,913 vs 2,265
+
+DATASET OVERVIEW
+---------------
+Total Samples: 162,705
+Number of Classes: 8
+Most Common Action: Class 3 - Pushing the needle through the tissue (41,913 samples)
+Least Common Action: Class 5 - Tying a knot (2,265 samples)
+
+TRAINING SET DETAILED BREAKDOWN
+----------------------------------------
+Class Action Name                         Count      Percentage
+----------------------------------------------------------------------
+0     Other                               20,148     15.47     %
+1     Picking-up the needle               7,621      5.85      %
+2     Positioning the needle tip          31,940     24.53     %
+3     Pushing the needle through the tissue 32,451     24.92     %
+4     Pulling the needle out of the tissue 28,304     21.73     %
+5     Tying a knot                        2,079      1.60      %
+6     Cutting the suture                  2,974      2.28      %
+7     Returning/dropping the needle       4,715      3.62      %
+
+TEST SET DETAILED BREAKDOWN
+----------------------------------------
+Class Action Name                         Count      Percentage
+----------------------------------------------------------------------
+0     Other                               3,655      11.26     %
+1     Picking-up the needle               1,942      5.98      %
+2     Positioning the needle tip          8,506      26.19     %
+3     Pushing the needle through the tissue 9,462      29.14     %
+4     Pulling the needle out of the tissue 7,303      22.49     %
+5     Tying a knot                        186        0.57      %
+6     Cutting the suture                  678        2.09      %
+7     Returning/dropping the needle       741        2.28      %
+
+COMBINED DATASET DETAILED BREAKDOWN
+----------------------------------------
+Class Action Name                         Count      Percentage
+----------------------------------------------------------------------
+0     Other                               23,803     14.63     %
+1     Picking-up the needle               9,563      5.88      %
+2     Positioning the needle tip          40,446     24.86     %
+3     Pushing the needle through the tissue 41,913     25.76     %
+4     Pulling the needle out of the tissue 35,607     21.88     %
+5     Tying a knot                        2,265      1.39      %
+6     Cutting the suture                  3,652      2.24      %
+7     Returning/dropping the needle       5,456      3.35      %
+
+IMBALANCE METRICS
+-----------------
+Imbalance Ratio (max/min): 18.50
+Coefficient of Variation: 0.789
+Gini Coefficient: 0.435
+Standard Deviation: 16037.4
+Classes with Zero Samples: 0
+
+RECOMMENDATIONS FOR MENG PROJECT
+-----------------------------------
+1. CRITICAL IMBALANCE DETECTED - Use aggressive balancing techniques:
+   - Implement focal loss or class-balanced loss
+   - Use oversampling for minority classes (SMOTE)
+   - Consider class-weighted training
+   - Monitor per-class metrics (precision, recall, F1)
+
+2. EVALUATION STRATEGY:
+   - Use macro-averaged F1 score for overall performance
+   - Report per-class precision, recall, and F1 scores
+   - Create confusion matrix for detailed analysis
+   - Consider surgical-specific metrics (action transition accuracy)
+
+3. TECHNICAL IMPLEMENTATION:
+   - Log per-class metrics during training
+   - Implement early stopping based on minority class performance
+   - Use stratified validation splits
+   - Consider ensemble methods for robust predictions
+
