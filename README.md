@@ -106,7 +106,7 @@ The training pipeline incorporates several sophisticated strategies designed to 
 The primary training command launches a comprehensive optimization process that handles model initialization, data loading, prompt engineering, and iterative parameter updates while maintaining careful attention to memory management throughout the training cycle:
 
 ```bat
-batchscripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml
+(batch) scripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml
 ```
 
 - Activates the complete training infrastructure, including class-weighted loss functions designed to address the 18.5 : 1 imbalance ratio present in surgical workflow data.  
@@ -118,7 +118,7 @@ batchscripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml
 Long training cycles within resource-constrained environments benefit significantly from robust checkpoint management that enables recovery from interruptions and systematic exploration of different training durations. The implementation provides comprehensive checkpoint functionality that preserves model weights, optimizer states, and learning rate schedules:
 
 ```bat
-batchscripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml resume "path\to\checkpoint.pt"
+(batch) scripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml resume "path\to\checkpoint.pt"
 ```
 
 - Resuming from a checkpoint maintains optimization momentum, ensuring that resumed training continues smoothly from the exact state where the previous session terminated.  
@@ -129,7 +129,7 @@ batchscripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml resume "path\to\check
 Before attempting to resume training from a previous session, researchers can systematically explore the available checkpoint files to identify the most appropriate restoration point:
 
 ```bat
-batchscripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml list
+(batch) scripts\run_train.bat .\configs\rarp50\rarp50_ft.yaml list
 ```
 
 - Lists all saved checkpoints along with creation timestamps and metadata.  
@@ -146,7 +146,7 @@ The evaluation infrastructure provides comprehensive assessment capabilities tha
 Once training has progressed to a satisfactory checkpoint, the evaluation process can be initiated to generate detailed performance metrics and prediction outputs:
 
 ```bat
-batchscripts\run_test.bat .\configs\rarp50\rarp50_test.yaml
+(batch) scripts\run_test.bat .\configs\rarp50\rarp50_test.yaml
 ```
 
 - Generates predictions for the complete test set while maintaining detailed records of model confidence, per-class performance characteristics, and temporal prediction patterns.  
@@ -158,7 +158,7 @@ batchscripts\run_test.bat .\configs\rarp50\rarp50_test.yaml
 Following the completion of model evaluation, specialized analysis tools provide deeper insights into model performance characteristics, helping researchers understand both strengths and limitations:
 
 ```bash
-batchpython analyze_rarp50_results.py
+(batch) python analyze_rarp50_results.py
 ```
 
 - Generates confusion matrices, per-class precision and recall metrics, and statistical summaries.  
@@ -176,7 +176,7 @@ The extreme class imbalance present in authentic surgical workflow data represen
 The dataset analysis utility provides detailed insights into the class distribution patterns that fundamentally shape the learning problem:
 
 ```bash
-batchpython analyze_rarp50_classes.py
+(batch) python analyze_rarp50_classes.py
 ```
 
 - Outputs quantitative metrics (e.g., imbalance ratios, class frequencies) that quantify the severity of class imbalance.  
